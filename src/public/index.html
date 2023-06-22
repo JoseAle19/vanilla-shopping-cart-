@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="./assets/icon.png">
+    <meta name="viewport" content="width=Payment, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>DevJosStore</title>
+</head>
+
+
+<body class="relative">
+
+    <div id="sideCart" class="fixed w-full h-screen  z-20 overflow-hidden flex justify-end  ">
+
+        <div class="w-1/4 h-screen bg-slate-200  flex flex-col ">
+            <div class="flex justify-between items-center p-2 border-b-2 border-black mb-5">
+                <div></div>
+                <h2 class="uppercase text-bold text-center">Carrito de productos</h2>
+                <div id="closeCart"> <svg class="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="40"
+                        height="40" viewBox="0 0 100 100">
+                        <line x1="20" y1="20" x2="80" y2="80" stroke="black" stroke-width="4" />
+                        <line x1="20" y1="80" x2="80" y2="20" stroke="black" stroke-width="4" />
+                    </svg></div>
+            </div>
+
+            <!-- productos -->
+            <div id="productsPay" class="h-4/5 m-2 p-2  overflow-scroll  containerProducts">
+                <div class="flex justify-center items-center bg-slate-300 p-5 mb-2">
+                    <div class="w-14">
+                        <img src="https://doto.vtexassets.com/arquivos/ids/290781-800-auto?v=638213442749800000&width=800&height=auto&aspect=true"
+                            alt="imagen">
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <p class="text-center font-bold ">Nombre del producto y mas de los 4 </p>
+                        <span class="font-bold text-sky-700">$100 dls</span>
+                    </div>
+                </div>
+            </div>
+            <button id="payProducts" class="">
+                <span id="textPayProducts" class="">pagar</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="30" viewBox="0 0 200 128">
+                    <rect x="10" y="10" width="180" height="108" rx="12" ry="12" fill="#0099FF" />
+                    <rect x="20" y="60" width="160" height="12" rx="2" ry="2" fill="white" />
+                    <rect x="20" y="80" width="120" height="16" rx="2" ry="2" fill="white" />
+                    <rect x="140" y="80" width="40" height="16" rx="2" ry="2" fill="white" />
+                    <circle cx="24" cy="24" r="6" fill="white" />
+                    <circle cx="36" cy="24" r="6" fill="white" />
+                    <circle cx="48" cy="24" r="6" fill="white" />
+                    <path d="M68 24h12v4h-12zm16 0h16v4h-16zm20 0h8v4h-8zm12 0h8v4h-8zm12 0h4v4h-4z" fill="white" />
+                    <rect x="40" y="100" width="120" height="12" rx="2" ry="2" fill="white" />
+                </svg>
+
+            </button>
+
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center  h-100 bg-blue-800 p-2">
+        <!-- menu -->
+        <div>
+
+        </div>
+        <!-- logo -->
+        <div>
+            <p class="uppercase text-center text-white font-bold text-4xl p-4">devjosestore</p>
+        </div>
+        <!-- carrito -->
+        <div id="btnCart"
+            class="cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300  mr-5">
+            <img src="./assets/cart.png" alt="Logo cart">
+            <h3 id="itemCart" class="text-white font-bold"></h3>
+        </div>
+    </nav>
+    <main>
+        <!-- Productos -->
+
+        <div id="card" class="p-5 flex flex-wrap gap-4 justify-between overflow-hidden"></div>
+    </main>
+
+
+
+
+
+
+    <script>
+
+        // Variables de dom 
+        const itemsCart = document.getElementById('itemCart')
+        const loadingindicator = document.getElementById('load')
+        // Verificar si esta cargando o no 
+        let isLoading = false;
+        // Declarar las variables para los productos
+        let products = [];
+
+        let productsinCArt = []
+        const sidebar = document.getElementById('sideCart');
+        const btnSidebar = document.getElementById('btnCart');
+        const closeCart = document.getElementById('closeCart');
+
+        let isOpen = true;
+        sidebar.style.display = 'none'
+        closeCart.addEventListener('click', () => {
+            console.log('wenas');
+
+            isOpen = false;
+            if (isOpen) {
+                sidebar.style.display = 'block'
+            }
+            else {
+                sidebar.style.display = 'none'
+
+            }
+        })
+
+        btnSidebar.addEventListener('click', () => {
+            console.log('wenas 2');
+
+            isOpen = true
+            if (isOpen) {
+                sidebar.style.display = 'block'
+                getProductsTocart()
+            }
+            else {
+                sidebar.style.display = 'none'
+            }
+        })
+
+        const isAvailableButtton = (products) => {
+            const btnPayment = document.getElementById('payProducts')
+            const textDisable = document.getElementById('textPayProducts')
+            if (products.length < 1) {
+                console.log('si');
+                btnPayment.style = ''
+                textDisable.style = ''
+                btnPayment.disabled = true
+                btnPayment.classList.add('flex', 'rounded-md', 'flex-around', 'items-center', 'justify-center', 'p-3', 'm-5', 'gap-5', 'bg-slate-400', 'hover:bg-slate-500')
+                textDisable.classList.add('uppercase', 'font-bold', 'text-center', 'text-white')
+            }
+            else {
+                console.log('no');
+                btnPayment.style = ''
+                textDisable.style = ''
+                btnPayment.disabled = false
+                btnPayment.classList.add('flex', 'rounded-md', 'flex-around', 'items-center', 'justify-center', 'p-3', 'm-5', 'gap-5', 'bg-blue-300', 'hover:bg-blue-500')
+                textDisable.classList.add('uppercase', 'font-bold', 'text-center')
+            }
+        }
+        // metodo para agragar los producstos del carrito al sideBar 
+        const getProductsTocart = () => {
+
+            const boxItemInCart = document.getElementById('productsPay')
+            boxItemInCart.innerHTML = '';
+            if (productsinCArt.length < 1) {
+                const noItems = document.createElement('h2')
+                noItems.innerText = 'Sin productos en el carrito'
+                noItems.classList.add('font-bold', 'text-center')
+                boxItemInCart.appendChild(noItems)
+            }
+            isAvailableButtton(productsinCArt)
+            productsinCArt?.forEach(product => {
+                const box1 = document.createElement('div')
+                box1.classList.add('flex', 'justify-around', 'items-center', 'bg-slate-300', 'p-5', 'mb-2')
+
+                const box2 = document.createElement('div')
+                box2.classList.add('w-14')
+                const imageProduct = document.createElement('img')
+                imageProduct.src = product.price_data.product_data.images[0]
+                box2.appendChild(imageProduct)
+
+                const box3 = document.createElement('div')
+                box3.classList.add('flex', 'flex-col', 'items-center', 'justify-center')
+                const nameProduct = document.createElement('p')
+                nameProduct.classList.add('text-center', 'font-bold')
+                nameProduct.innerText = product.price_data.product_data.name
+                const priceProduct = document.createElement('span')
+                priceProduct.classList.add('font-bold', 'text-sky-700')
+                priceProduct.innerText = `$${product.price_data.unit_amount * (0.01)} usd`
+
+                box3.appendChild(nameProduct)
+                box3.appendChild(priceProduct)
+
+                box1.appendChild(box2)
+                box1.appendChild(box3)
+                boxItemInCart.appendChild(box1)
+            }
+            )
+
+        }
+
+
+        // Obtener los datos de la api 
+        const getAllProducts = async () => {
+            isLoading = true;
+            // loadingindicator.classList.add('block');
+
+            const res = await fetch('/all-products', {
+                method: 'GET'
+            });
+            const data = await res.json();
+
+            // loadingindicator.classList.remove('block');
+            // loadingindicator.classList.add('hidden');
+            isLoading = false;
+            allProducts(data.products);
+            return data.products;
+        };
+
+        const allProducts = (products) => {
+            const boxCard = document.getElementById('card')
+
+            const box3 = document.createElement('div')
+            // items del carrito 
+            products.forEach(product => {
+
+                const box = document.createElement('div')
+                const boxRelative = document.createElement('div')
+                const boxAbsolute = document.createElement('div')
+                const title = document.createElement('p');
+                const price = document.createElement('p');
+                const image = document.createElement('img')
+                // Agregar info 
+                title.innerHTML = product.price_data.product_data.name
+                price.innerHTML = `$${product.price_data.unit_amount * (0.01)} usd`
+                image.src = product.price_data.product_data.images[0]
+                image.classList.add('h-55', 'w-40')
+                // estilos
+                box.classList.add('h-auto', 'w-1/5', 'shadow-lg', 'shadow-gray-200')
+                boxRelative.classList.add('relative', 'flex', 'justify-center', 'items-center', 'p-5')
+                boxAbsolute.classList.add('w-full', 'h-full', 'absolute', 'z-10', 'hover:bg-slate-200', 'opacity-90', 'flex', 'justify-center', 'items-center', 'flex-col', 'rounded-md',
+                    'ease-in-out', 'duration-300')
+                boxRelative.appendChild(boxAbsolute)
+                boxRelative.appendChild(image)
+                box.appendChild(boxRelative)
+
+                title.classList.add('cursor-pointer', 'text-center', 'hover:text-sky-700')
+                price.classList.add('cursor-text', 'text-center')
+                box.appendChild(title)
+                box.appendChild(price)
+                boxCard.appendChild(box)
+
+                const description = document.createElement('span')
+                description.innerText = product.price_data.product_data.description
+                description.classList.add('text-start', 'font-bold', 'p-5')
+                boxAbsolute.appendChild(description)
+                description.style.display = 'none'
+
+                // Boton para agregar al carrito
+                const addProduct = document.createElement('button')
+
+                addProduct.innerText = 'Agregar'
+                addProduct.classList.add('bg-blue-900', 'p-2', 'font-bold', 'text-white', 'm-2', 'rounded-md')
+                boxAbsolute.appendChild(addProduct)
+                addProduct.style.display = 'none'
+
+
+                box.addEventListener('click', () => {
+                    addToCart(product)
+
+                })
+                // Para agregar ver o quitar la informacion 
+                boxAbsolute.addEventListener('mouseover', () => {
+                    description.style.display = 'block'
+                    addProduct.style.display = 'block'
+                })
+                boxAbsolute.addEventListener('mouseout', () => {
+                    description.style.display = 'none'
+                    addProduct.style.display = 'none'
+                })
+            })
+        }
+        // Agregar productos al arreglo de carrito y cargar los nuevos datos 
+        const addToCart = (product) => {
+
+            if (product && !productsinCArt.includes(product)) {
+                productsinCArt.push(product);
+                itemsCart.innerText = productsinCArt.length.toString()
+
+            }
+        };
+        // llmar la funcion de los productos
+        itemsCart.innerText = productsinCArt.length < 1 ? '0' : productsinCArt.length.toString()
+        getAllProducts()
+
+        // Realizar pago 
+        const btnPayment = document.getElementById('payProducts')
+        btnPayment.addEventListener('click', async () => {
+
+            const box2 = document.createElement("div")
+            box2.classList.add('flex', 'items-center', 'justify-center')
+            const box3 = document.createElement("div")
+            box3.classList.add('loading', 'animate-spin', 'rounded-full', 'h-8', 'w-8', 'border-4', 'border-b-2', 'border-b-2', 'border-black')
+            box2.appendChild(box3)
+            // document.body.insertAdjacentElement('afterbegin', box1)
+            document.body.classList.add('overflow-hidden');
+            btnPayment.appendChild(box3)
+
+            const res = await fetch('/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productsinCArt)
+            })
+
+            const data = await res.json()
+            const loading = document.querySelector('.loading')
+            if (loading && data) {
+                loading.remove()
+                window.location.href = data.url
+            }
+            else {
+                loading.remove()
+
+            }
+        })
+
+    </script>
+</body>
+
+</html>
